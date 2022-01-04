@@ -2,7 +2,11 @@ import {
   createGlobalTheme,
   createTheme,
   createThemeContract,
+  style,
 } from '@vanilla-extract/css';
+import { checkboxVariables } from '../components/Button/macos';
+import { checkboxVariablesWin11 } from '../components/Button/windows';
+import themeContract from './themeContract';
 
 const root = createGlobalTheme('#app', {
   space: {
@@ -16,7 +20,11 @@ const root = createGlobalTheme('#app', {
   },
 });
 
+console.log('themeContract', themeContract);
+
 const colors = createThemeContract({
+  ...themeContract,
+
   gray1: null,
   gray2: null,
   gray3: null,
@@ -55,6 +63,9 @@ const colors = createThemeContract({
 });
 
 export const lightTheme = createTheme(colors, {
+  ...checkboxVariables,
+
+  // generic theme properties
   gray1: '#fcfcfc',
   gray2: '#f8f8f8',
   gray3: '#f3f3f3',
@@ -93,6 +104,9 @@ export const lightTheme = createTheme(colors, {
 });
 
 export const darkTheme = createTheme(colors, {
+  ...checkboxVariablesWin11,
+
+  // generic theme properties
   gray1: '#161616',
   gray2: '#1c1c1c',
   gray3: '#232323',
@@ -128,6 +142,11 @@ export const darkTheme = createTheme(colors, {
     normal: '#F9FAFB',
     dimmed: '#D1D5DB',
   },
+});
+
+export const storybookPreview = style({
+  background: colors.gray1,
+  padding: 20,
 });
 
 export const vars = { ...root, colors };
