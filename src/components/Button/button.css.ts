@@ -1,26 +1,39 @@
 import { createTheme, style } from '@vanilla-extract/css';
 import { sprinkles } from '../../themes/sprinkles.css';
 import { vars } from '../../themes/theme.css';
+import { forTheme } from '../../utils/helpers';
 
 export const buttonStyle = style([
   sprinkles({
-    background: {
-      windows: 'blue',
-      macos: 'red',
+    bgColor: {
+      base: 'checkboxFill',
+      focusVisible: 'checkboxFill',
+      hover: 'checkboxFillActive',
     },
     color: {
-      hover: 'red',
+      base: 'checkboxFillActive',
+      focusVisible: 'checkboxFill',
+      hover: 'checkboxFill',
     },
   }),
   {
-    // backgroundColor: vars.colors.gray12,
     border: 'none',
-    color: vars.colors.gray1,
+    color: vars.colors.checkboxFill,
     padding: '10px 32px',
     textAlign: 'center',
     textDecoration: 'none',
     display: 'inline-block',
     fontSize: 16,
-    outline: `2px solid ${vars.colors.sky9}`,
+
+    ...forTheme({
+      windows: {
+        background: 'orange',
+        outline: '2px solid red',
+        border: '3px solid purple',
+      },
+      macos: {
+        background: 'green',
+      },
+    }),
   },
 ]);

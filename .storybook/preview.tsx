@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import {
-  lightTheme,
-  darkTheme,
+  macosTheme,
+  windowsTheme,
   storybookPreview,
 } from '../src/themes/theme.css';
 
@@ -21,17 +21,21 @@ export const parameters = {
   },
 };
 
+const themes = {
+  windows: windowsTheme,
+  macos: macosTheme,
+};
+
 export const decorators = [
   (Story, context) => {
     const [theme, setTheme] = useState<'windows' | 'macos'>('windows');
     const [isDarkTheme, setIsDarkTheme] = useState(false);
+    const activeTheme = themes[theme][isDarkTheme ? 'dark' : 'light'];
 
     return (
       <div
         id="app"
-        className={`rd-${theme} ${
-          isDarkTheme ? darkTheme : lightTheme
-        } ${storybookPreview}`}
+        className={`rd-${theme} ${activeTheme} ${storybookPreview}`}
       >
         <Story />
         <button onClick={() => setIsDarkTheme((currentValue) => !currentValue)}>
