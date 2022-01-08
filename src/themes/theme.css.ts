@@ -45,9 +45,4 @@ export const macosTheme = {
   dark: createTheme(colors, getVariables('macos', 'dark'), 'macos-dark'),
 };
 
-export const storybookPreview = style({
-  background: colors.background,
-  padding: 20,
-});
-
 export const vars = { ...root, colors };

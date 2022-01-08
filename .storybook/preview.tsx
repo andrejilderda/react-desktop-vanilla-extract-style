@@ -1,9 +1,11 @@
-import { useState } from 'react';
+import { style } from '@vanilla-extract/css';
+import React, { useState, Fragment } from 'react';
 import {
-  macosTheme,
-  windowsTheme,
-  storybookPreview,
-} from '../src/themes/theme.css';
+  classNamePrefix,
+  pseudoWrapperClassNames,
+} from '../src/constants/styles';
+import { macosTheme, windowsTheme, vars } from '../src/themes/theme.css';
+import { storybookPreview } from './preview.css';
 
 export const parameters = {
   actions: { argTypesRegex: '^on[A-Z].*' },
@@ -21,35 +23,105 @@ export const parameters = {
   },
 };
 
+export const globalTypes = {
+  theme: {
+    name: 'Theme',
+    description: 'Global theme/OS',
+    defaultValue: 'windows',
+    toolbar: {
+      icon: 'browser',
+      items: [
+        {
+          title: 'macOS',
+          value: 'macos',
+        },
+        {
+          title: 'Windows',
+          value: 'windows',
+        },
+      ],
+      showName: true,
+    },
+  },
+  mode: {
+    name: 'Mode',
+    defaultValue: 'light',
+    toolbar: {
+      icon: 'contrast',
+      items: ['auto', 'light', 'dark', 'side-by-side', 'stacked'],
+      showName: true,
+    },
+  },
+  pseudo: {
+    name: 'Pseudo',
+    defaultValue: 'light',
+    toolbar: {
+      icon: 'contrast',
+      items: ['default', 'hover', 'active', 'focus-visible', 'all'],
+      showName: true,
+    },
+  },
+};
+
 const themes = {
   windows: windowsTheme,
   macos: macosTheme,
 };
 
+const StoryWrapper = ({
+  story,
+  pseudoState = 'default',
+}: {
+  story: React.ReactNode;
+  pseudoState?: keyof typeof pseudoWrapperClassNames | 'all';
+}) => {
+  if (pseudoState === 'all') {
+    return (
+      <>
+        <div className={pseudoWrapperClassNames['default']}>{story}</div>
+        <div className={pseudoWrapperClassNames['hover']}>{story}</div>
+        <div className={pseudoWrapperClassNames['active']}>{story}</div>
+        <div className={pseudoWrapperClassNames['focusVisible']}>{story}</div>
+      </>
+    );
+  }
+
+  return <div className={pseudoWrapperClassNames[pseudoState]}>{story}</div>;
+};
+
 export const decorators = [
   (Story, context) => {
-    const [theme, setTheme] = useState<'windows' | 'macos'>('windows');
-    const [isDarkTheme, setIsDarkTheme] = useState(false);
-    const activeTheme = themes[theme][isDarkTheme ? 'dark' : 'light'];
+    const { theme, mode, pseudo } = context.globals;
+    const activeTheme = themes[theme][mode];
+    const lightTheme = themes[theme].light;
+    const darkTheme = themes[theme].dark;
+    const themeClassName = `${classNamePrefix}-${theme}`;
+
+    if (mode === 'side-by-side' || mode === 'stacked')
+      return (
+        <div className={storybookPreview({ layout: mode })}>
+          <div
+            className={`${themeClassName} ${lightTheme}`}
+            style={{ background: vars.colors.background }}
+          >
+            <StoryWrapper story={<Story />} pseudoState={pseudo} />
+          </div>
+          <div
+            className={`${themeClassName} ${darkTheme}`}
+            style={{ background: vars.colors.background }}
+          >
+            <StoryWrapper story={<Story />} pseudoState={pseudo} />
+          </div>
+        </div>
+      );
 
     return (
       <div
-        id="app"
-        className={`rd-${theme} ${activeTheme} ${storybookPreview}`}
+        className={`${themeClassName} ${activeTheme} ${storybookPreview()} ${
+          pseudoWrapperClassNames[pseudo]
+        }`}
       >
-        <Story />
-        <button onClick={() => setIsDarkTheme((currentValue) => !currentValue)}>
-          Switch to {isDarkTheme ? 'light' : 'dark'} theme
-        </button>
-        <button
-          onClick={() =>
-            setTheme((currentTheme) =>
-              currentTheme === 'windows' ? 'macos' : 'windows',
-            )
-          }
-        >
-          Switch to {theme === 'windows' ? 'macos' : 'windows'} theme
-        </button>
+        <StoryWrapper story={<Story />} pseudoState={pseudo} />
       </div>
     );
   },
