@@ -27,4 +27,7 @@ export const storybookPreview = recipe({
 
 globalStyle(`${storybookPreview()} > div`, {
   flex: 1,
+  display: 'flex',
+  flexDirection: 'column',
+  gap: '12px',
 });

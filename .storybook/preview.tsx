@@ -1,4 +1,5 @@
 import { style } from '@vanilla-extract/css';
+import clsx from 'clsx';
 import React, { useState, Fragment } from 'react';
 import {
   classNamePrefix,
@@ -30,6 +31,16 @@ export const globalTypes = {
     defaultValue: 'windows',
     toolbar: {
       icon: 'browser',
+      shortcuts: {
+        next: {
+          label: 'Go to next theme',
+          keys: ['L'],
+        },
+        previous: {
+          label: 'Go to previous theme',
+          keys: ['K'],
+        },
+      },
       items: [
         {
           title: 'macOS',
@@ -48,7 +59,13 @@ export const globalTypes = {
     defaultValue: 'light',
     toolbar: {
       icon: 'contrast',
-      items: ['auto', 'light', 'dark', 'side-by-side', 'stacked'],
+      items: [
+        'auto',
+        { value: 'light', icon: 'circlehollow', title: 'light' },
+        { value: 'dark', icon: 'circle', title: 'dark' },
+        { value: 'side-by-side', icon: 'sidebar', title: 'side by side' },
+        { value: 'stacked', icon: 'bottombar', title: 'stacked' },
+      ],
       showName: true,
     },
   },
@@ -101,13 +118,13 @@ export const decorators = [
       return (
         <div className={storybookPreview({ layout: mode })}>
           <div
-            className={`${themeClassName} ${lightTheme}`}
+            className={clsx(themeClassName, lightTheme)}
             style={{ background: vars.colors.background }}
           >
             <StoryWrapper story={<Story />} pseudoState={pseudo} />
           </div>
           <div
-            className={`${themeClassName} ${darkTheme}`}
+            className={clsx(themeClassName, darkTheme)}
             style={{ background: vars.colors.background }}
           >
             <StoryWrapper story={<Story />} pseudoState={pseudo} />
@@ -117,9 +134,12 @@ export const decorators = [
 
     return (
       <div
-        className={`${themeClassName} ${activeTheme} ${storybookPreview()} ${
-          pseudoWrapperClassNames[pseudo]
-        }`}
+        className={clsx(
+          themeClassName,
+          activeTheme,
+          storybookPreview(),
+          pseudoWrapperClassNames[pseudo],
+        )}
       >
         <StoryWrapper story={<Story />} pseudoState={pseudo} />
       </div>
