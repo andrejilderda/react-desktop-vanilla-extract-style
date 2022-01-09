@@ -3,7 +3,6 @@ import {
   fallbackVar,
   style,
 } from '@vanilla-extract/css';
-import { M } from 'ts-toolbelt';
 import { classNamePrefix, pseudo } from '../../constants/styles';
 import { assignVarsToTheme, composeVars } from '../../utils/helpers';
 
@@ -26,8 +25,6 @@ const colorVars = {
   textActive: 'button-text-active',
   textHover: 'button-text-hover',
   textDisabled: 'button-text-disabled',
-
-  fontSize: 'button-font-size',
 } as const;
 
 const constructClass = (_value: string | null, path: string[]) =>
@@ -54,16 +51,16 @@ export const buttonStyle = style([
     padding: '6px $5',
     textAlign: 'center',
     userSelect: 'none',
-    borderColor: '$$border',
+    borderColor: c.border,
     backgroundColor: c.fill,
     color: c.text,
     content: c.borderDisabled,
 
     selectors: {
       '&[disabled]': {
-        backgroundColor: fallbackVar(c.fill, c.fillDisabled),
-        borderColor: composeVars([c.borderDisabled, 'border']),
-        color: composeVars([c.textDisabled, 'text']),
+        backgroundColor: fallbackVar(c.fillDisabled, c.fill),
+        borderColor: fallbackVar(c.borderDisabled, c.border),
+        color: fallbackVar(c.textDisabled, c.text),
       },
 
       '&:not([disabled])': {
@@ -71,27 +68,48 @@ export const buttonStyle = style([
           'inset 0px $$elevationY 0px 0px $$elevationStroke, inset 0px 0px 0px 1px $$stroke',
       },
 
+      // hover
       [`${pseudo.hover}:not([disabled])`]: {
         backgroundColor: fallbackVar(c.fillHover, c.fill),
         color: fallbackVar(c.textHover, c.text),
       },
 
+      // active
       [`${pseudo.active}:not([disabled])`]: {
-        backgroundColor: composeVars(['fillActive', 'fill']),
-        color: composeVars(['textActive', 'text']),
-        boxShadow: `inset 0px elevationY 0px 0px ${composeVars([
-          'elevationStrokeActive',
-          'elevationStroke',
-        ])}, inset 0px 0px 0px 1px ${composeVars(['strokeActive', 'stroke'])}`,
+        backgroundColor: fallbackVar(c.fillActive, c.fill),
+        color: fallbackVar(c.textActive, c.text),
+        boxShadow: `inset 0px elevationY 0px 0px ${fallbackVar(
+          c.elevationStrokeActive,
+          c.elevationStroke,
+        )}, inset 0px 0px 0px 1px ${fallbackVar(c.strokeActive, c.stroke)}`,
       },
 
+      // windows
+      // [c.strokeDisabled]: 'transparent',
+      // borderRadius: '4px',
+      // [c.elevationStrokeActive]: 'transparent',
+
+      // windows color overrides
       ...assignVarsToTheme<typeof c>('windows', {
-        [c.fill]: 'fill_color.accent.default',
-        [c.fillDisabled]: 'background.fill_color.smoke.default',
-        [c.fillActive]: 'background.fill_color.smoke.default',
-        [c.stroke]: 'fill_color.accent.default',
+        [c.fill]: 'fill_color.control.default',
+        [c.fillHover]: 'fill_color.control.secondary',
+        [c.fillDisabled]: 'fill_color.accent.disabled',
+        [c.fillActive]: 'fill_color.control.tertiary',
+
+        // stroke
+        [c.stroke]: 'stroke_color.control_stroke.default',
+        [c.strokeActive]: 'stroke_color.control_stroke.default',
+
+        // elevationStroke
+        [c.elevationStroke]: 'stroke_color.control_stroke.secondary',
+
+        // text
+        [c.text]: 'fill_color.text.primary',
+        [c.textActive]: 'fill_color.text.secondary',
+        [c.textDisabled]: 'fill_color.text.disabled',
       }),
 
+      // macos color overrides
       ...assignVarsToTheme<typeof colorVars>('macos', {
         [c.fill]: 'base.blue',
       }),
