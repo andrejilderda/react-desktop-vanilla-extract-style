@@ -1,27 +1,69 @@
-import { assignVars, createTheme, style } from '@vanilla-extract/css';
-import { pseudo } from '../../constants/styles';
-import { sprinkles } from '../../themes/sprinkles.css';
-import { vars } from '../../themes/theme.css';
-import tokens from '../../themes/tokens';
-import { composeVars, forTheme } from '../../utils/helpers';
+import {
+  createGlobalThemeContract,
+  fallbackVar,
+  style,
+} from '@vanilla-extract/css';
+import { M } from 'ts-toolbelt';
+import { classNamePrefix, pseudo } from '../../constants/styles';
+import { assignVarsToTheme, composeVars } from '../../utils/helpers';
+
+const colorVars = {
+  border: 'button-border',
+  borderDisabled: 'button-border-disabled',
+
+  elevationStroke: 'button-elevation-stroke',
+  elevationStrokeActive: 'button-elevation-stroke-active',
+
+  fill: 'button-fill',
+  fillActive: 'button-fill-active',
+  fillHover: 'button-fill-hover',
+  fillDisabled: 'button-fill-disabled',
+
+  stroke: 'button-stroke',
+  strokeActive: 'button-stroke-active',
+
+  text: 'button-text',
+  textActive: 'button-text-active',
+  textHover: 'button-text-hover',
+  textDisabled: 'button-text-disabled',
+
+  fontSize: 'button-font-size',
+} as const;
+
+const constructClass = (_value: string | null, path: string[]) =>
+  `${classNamePrefix}-button-${path.join('-').replace('.', '_')}`;
+
+// contract for colorVars
+const c = createGlobalThemeContract(colorVars, constructClass);
+const local = createGlobalThemeContract(
+  {
+    fontSize: 'button-font-size',
+    elevationY: 'button-elevation-y',
+    elevationStroke: 'button-elevation-stroke',
+    stroke: 'button-stroke',
+  },
+  constructClass,
+);
 
 export const buttonStyle = style([
   {
     all: 'unset',
     cursor: 'default',
-    fontSize: '$2',
+    fontSize: local.fontSize,
     lineHeight: '$2',
     padding: '6px $5',
     textAlign: 'center',
     userSelect: 'none',
     borderColor: '$$border',
-    color: '$$text',
+    backgroundColor: c.fill,
+    color: c.text,
+    content: c.borderDisabled,
 
     selectors: {
       '&[disabled]': {
-        backgroundColor: composeVars(['fillDisabled', 'fill']),
-        borderColor: composeVars(['borderDisabled', 'border']),
-        color: composeVars(['textDisabled', 'text']),
+        backgroundColor: fallbackVar(c.fill, c.fillDisabled),
+        borderColor: composeVars([c.borderDisabled, 'border']),
+        color: composeVars([c.textDisabled, 'text']),
       },
 
       '&:not([disabled])': {
@@ -30,8 +72,8 @@ export const buttonStyle = style([
       },
 
       [`${pseudo.hover}:not([disabled])`]: {
-        backgroundColor: composeVars(['fillHover', 'fill']),
-        color: composeVars(['textHover', 'text']),
+        backgroundColor: fallbackVar(c.fillHover, c.fill),
+        color: fallbackVar(c.textHover, c.text),
       },
 
       [`${pseudo.active}:not([disabled])`]: {
@@ -43,26 +85,16 @@ export const buttonStyle = style([
         ])}, inset 0px 0px 0px 1px ${composeVars(['strokeActive', 'stroke'])}`,
       },
 
-      ...forTheme({
-        windows: {
-          vars: {
-            [vars.colors.button_background]: 'orange',
-          },
-        },
-        macos: {},
+      ...assignVarsToTheme<typeof c>('windows', {
+        [c.fill]: 'fill_color.accent.default',
+        [c.fillDisabled]: 'background.fill_color.smoke.default',
+        [c.fillActive]: 'background.fill_color.smoke.default',
+        [c.stroke]: 'fill_color.accent.default',
+      }),
+
+      ...assignVarsToTheme<typeof colorVars>('macos', {
+        [c.fill]: 'base.blue',
       }),
     },
   },
-  sprinkles({
-    bgColor: {
-      base: 'button_background',
-      focusVisible: 'button_background',
-      hover: 'button_background',
-    },
-    color: {
-      base: 'button_background',
-      focusVisible: 'button_background',
-      hover: 'button_background',
-    },
-  }),
 ]);

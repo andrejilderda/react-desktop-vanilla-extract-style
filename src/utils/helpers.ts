@@ -5,10 +5,11 @@ import {
 } from '@vanilla-extract/css/dist/declarations/src/types';
 import { Nullable } from 'ts-toolbelt/out/Object/Nullable';
 import { classNamePrefix } from '../constants/styles';
-import macosTokens from '../themes/macos/tokens';
-import { macosTheme, windowsTheme } from '../themes/theme.css';
-import windowsTokens from '../themes/windows/tokens';
+import tokens from '../themes/tokens';
+import { themes } from '../themes/theme.css';
 import { ThemeMode, ThemeName } from '../types';
+import { NestedObjKeys } from '../types/flat';
+import { get } from 'lodash';
 
 // iterate over an object and make all object properties null
 export function objToNull<T extends object>(obj: T): Nullable<T, '', 'deep'> {
@@ -26,13 +27,13 @@ export function objToNull<T extends object>(obj: T): Nullable<T, '', 'deep'> {
  * @example getToken('windows', 'light').fill_color.accent.default
  */
 // prettier-ignore
-export function getTokens<T extends ThemeMode>(theme: 'windows', mode: T): typeof windowsTokens[T];
+export function getTokens<T extends ThemeMode>(theme: 'windows', mode: T): typeof tokens.windows[T];
 // prettier-ignore
-export function getTokens<T extends ThemeMode>(theme: 'macos', mode: T): typeof macosTokens[T];
+export function getTokens<T extends ThemeMode>(theme: 'macos', mode: T): typeof tokens.macos[T];
 export function getTokens(theme: ThemeName, mode: ThemeMode) {
-  const tokens = theme === 'windows' ? windowsTokens : macosTokens;
+  const themeTokens = theme === 'windows' ? tokens.windows : tokens.macos;
 
-  return tokens[mode];
+  return themeTokens[mode];
 }
 
 /**
@@ -71,6 +72,60 @@ export const forTheme = (forThemeProperties: SelectorMap): SelectorMap => {
 
   return selectors;
 };
+
+/**
+ * Generates CSS properties for both light & dark mode based on tokens for a
+ * certain theme. Make sure to spread the result inside `selectors`.
+ *
+ * @example
+ * {
+ *   // ...other styles
+ *   selectors: {
+ *     ...assignVarsToTheme('windows', {
+ *       [contract.fill]: 'background.fill_color.accent_acrylic_background.base',
+ *     })
+ *   }
+ * }
+ */
+
+// prettier-ignore
+export function assignVarsToTheme<T extends object>(theme: 'windows', vars: Partial<Record<keyof T, NestedObjKeys<typeof tokens.windows.light>>>): Record<string, { vars: {}}>
+// prettier-ignore
+export function assignVarsToTheme<T extends object>(theme: 'macos', vars: Partial<Record<keyof T, NestedObjKeys<typeof tokens.macos.light>>>): Record<string, { vars: {}}>
+export function assignVarsToTheme<T extends object>(
+  theme: ThemeName,
+  vars: Partial<
+    Record<
+      keyof T,
+      NestedObjKeys<typeof tokens.windows.light | typeof tokens.macos.light>
+    >
+  >,
+) {
+  const resolveValues = (mode: ThemeMode) => {
+    return Object.entries(vars).reduce((acc, [key, value]) => {
+      const themeTokens = tokens[theme][mode];
+      const resolvedValue = get(themeTokens, value as any);
+
+      if (!resolvedValue)
+        throw new Error(`Token for value '${value}' not found.`);
+
+      return { ...acc, [key.replaceAll(/^var\(|\)$/g, '')]: resolvedValue };
+    }, {});
+  };
+
+  return {
+    [`.${themes[theme].light} &`]: {
+      vars: {
+        ...resolveValues('light'),
+      },
+    },
+    [`.${themes[theme].dark} &`]: {
+      vars: {
+        ...resolveValues('dark'),
+      },
+    },
+  };
+}
 
 /**
  * Returns nested custom properties for fallbacks, like:

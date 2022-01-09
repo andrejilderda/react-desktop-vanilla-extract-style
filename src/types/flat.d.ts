@@ -3,7 +3,7 @@
 // Thanks to jcalz: https://stackoverflow.com/users/2887218/jcalz
 type Join<K, P> = K extends string | number
   ? P extends string | number
-    ? `${K}${'' extends P ? '' : '_'}${P}`
+    ? `${K}${'' extends P ? '' : '.'}${P}`
     : never
   : never;
 

@@ -55,4 +55,9 @@ export const macosTheme = {
   dark: createTheme(colors, getVariables('macos', 'dark'), 'macos-dark'),
 };
 
+export const themes = {
+  windows: windowsTheme,
+  macos: macosTheme,
+};
+
 export const vars = { ...root, colors };
