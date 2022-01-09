@@ -12,7 +12,7 @@ export const pseudoWrapperClassNames = {
 // &:hover, .pseudo-hover &`,
 // etc.
 export const pseudo = {
-  hover: `&:hover, .${pseudoWrapperClassNames.hover} &`,
-  active: `&:active, .${pseudoWrapperClassNames.active} &`,
-  focusVisible: `&:focus-visible, .${pseudoWrapperClassNames.focusVisible} &`,
+  hover: `.${pseudoWrapperClassNames.hover} &, &:hover`,
+  active: `.${pseudoWrapperClassNames.active} &, &:active`,
+  focusVisible: `.${pseudoWrapperClassNames.focusVisible} &, &:focus-visible`,
 };
