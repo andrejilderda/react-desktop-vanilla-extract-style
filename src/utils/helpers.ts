@@ -4,6 +4,7 @@ import {
   StyleWithSelectors,
 } from '@vanilla-extract/css/dist/declarations/src/types';
 import { Nullable } from 'ts-toolbelt/out/Object/Nullable';
+import { classNamePrefix } from '../constants/styles';
 import macosTokens from '../themes/macos/tokens';
 import { macosTheme, windowsTheme } from '../themes/theme.css';
 import windowsTokens from '../themes/windows/tokens';
@@ -35,26 +36,28 @@ export function getTokens(theme: ThemeName, mode: ThemeMode) {
 }
 
 /**
- * Specify CSS properties for a certain theme specifically
+ * Specify CSS properties for a certain theme specifically.
+ * Make sure to spread the result inside `selectors`.
  *
  * @example
  * {
  *   // ...other styles
- *   ...forTheme({
- *     windows: {
- *       background: 'blue',
- *     },
- *     macos: {
- *       background: 'marineblue'
- *     }
- *   })
+ *   selectors: {
+ *     ...forTheme({
+ *       windows: {
+ *         background: 'blue',
+ *       },
+ *       macos: {
+ *         background: 'marineblue'
+ *       }
+ *     })
+ *   }
  * }
  */
-type ForThemeProperties = { [K in ThemeName]: CSSProperties };
-export const forTheme = (
-  forThemeProperties: ForThemeProperties,
-): StyleWithSelectors => {
-  const selectors = Object.entries(forThemeProperties).reduce(
+
+type SelectorMap = StyleWithSelectors['selectors'];
+export const forTheme = (forThemeProperties: SelectorMap): SelectorMap => {
+  const selectors = Object.entries(forThemeProperties || {}).reduce(
     (acc, [key, value]) => {
       const themeClassNames =
         key === 'windows'
@@ -66,7 +69,27 @@ export const forTheme = (
     {},
   );
 
-  return {
-    selectors,
-  };
+  return selectors;
+};
+
+/**
+ * Returns nested custom properties for fallbacks, like:
+ * `var(--rd--strokeActive, var(--rd--strokeDisabled, var(--rd--strokeHover, var(--stroke))))`
+ *
+ * @example
+ * '&[disabled]': {
+ *   backgroundColor: composeVars(['fillDisabled', 'fill']),
+ * }
+ */
+export const composeVars = (props: string[]) => {
+  return [...props].reverse().reduce((acc, variable, index) => {
+    if (index === 0) return variable;
+
+    // Stitches doesn't allow a custom property fallback, so we construct our
+    // own classname
+    return `var(--${classNamePrefix}--${variable.replaceAll(
+      '$$',
+      '',
+    )}, ${acc})`;
+  }, '');
 };

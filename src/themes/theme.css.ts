@@ -9,6 +9,8 @@ import button from '../components/Button/themes';
 import checkboxVariablesWin11 from '../components/Button/themes/windows';
 import { classNamePrefix } from '../constants/styles';
 import { ThemeMode, ThemeName } from '../types';
+import { flatten } from 'flat';
+import { NestedObjKeys } from '../types/flat';
 
 const root = createGlobalTheme('#app', {
   space: {
@@ -23,9 +25,17 @@ const root = createGlobalTheme('#app', {
 });
 
 const getVariables = (theme: ThemeName, mode: ThemeMode = 'light') => {
-  return {
-    ...button[theme](mode),
+  const componentVars = {
+    button: button[theme](mode),
+    // ... other components
   };
+
+  return flatten<
+    typeof componentVars,
+    Record<NestedObjKeys<typeof componentVars>, string>
+  >(componentVars, {
+    delimiter: '_',
+  });
 };
 
 const colors = createGlobalThemeContract(

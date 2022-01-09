@@ -6,7 +6,7 @@ const checkboxVariables = (mode: ThemeMode) => {
 
   return {
     background: tokens.windows.windowBackground,
-    checkboxFill: tokens.base.pink,
+    fill: tokens.base.pink,
     checkboxFillHover: tokens.base.yellow,
     checkboxFillActive: tokens.base.indigo,
   };
