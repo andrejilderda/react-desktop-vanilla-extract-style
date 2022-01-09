@@ -89,14 +89,15 @@ export const forTheme = (forThemeProperties: SelectorMap): SelectorMap => {
  */
 
 // prettier-ignore
-export function assignVarsToTheme<T extends object>(theme: 'windows', vars: Partial<Record<keyof T, NestedObjKeys<typeof tokens.windows.light>>>): Record<string, { vars: {}}>
+export function assignVarsToTheme(componentName: string, theme: 'windows', vars: Partial<Record<string, NestedObjKeys<typeof tokens.windows.light>>>): Record<string, { vars: {}}>
 // prettier-ignore
-export function assignVarsToTheme<T extends object>(theme: 'macos', vars: Partial<Record<keyof T, NestedObjKeys<typeof tokens.macos.light>>>): Record<string, { vars: {}}>
-export function assignVarsToTheme<T extends object>(
+export function assignVarsToTheme(componentName: string, theme: 'macos', vars: Partial<Record<string, NestedObjKeys<typeof tokens.macos.light>>>): Record<string, { vars: {}}>
+export function assignVarsToTheme(
+  componentName: string,
   theme: ThemeName,
   vars: Partial<
     Record<
-      keyof T,
+      string,
       NestedObjKeys<typeof tokens.windows.light | typeof tokens.macos.light>
     >
   >,
@@ -109,7 +110,12 @@ export function assignVarsToTheme<T extends object>(
       if (!resolvedValue)
         throw new Error(`Token for value '${value}' not found.`);
 
-      return { ...acc, [key.replaceAll(/^var\(|\)$/g, '')]: resolvedValue };
+      const newKey = `--rd-${componentName}-${key.replaceAll(
+        /^var\(|\)$/g,
+        '',
+      )}`;
+
+      return { ...acc, [newKey]: resolvedValue };
     }, {});
   };
 

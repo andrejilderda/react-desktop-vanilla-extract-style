@@ -5,8 +5,6 @@ import {
   createGlobalThemeContract,
   style,
 } from '@vanilla-extract/css';
-import button from '../components/Button/themes';
-import checkboxVariablesWin11 from '../components/Button/themes/windows';
 import { classNamePrefix } from '../constants/styles';
 import { ThemeMode, ThemeName } from '../types';
 import { flatten } from 'flat';
@@ -26,7 +24,7 @@ const root = createGlobalTheme('#app', {
 
 const getVariables = (theme: ThemeName, mode: ThemeMode = 'light') => {
   const componentVars = {
-    button: button[theme](mode),
+    // button: button[theme](mode),
     // ... other components
   };
 
