@@ -22,13 +22,13 @@ const Template: Story<ButtonProps & { wrapperClass: string }> = ({
   </div>
 );
 
-export const Primary = Template.bind({});
-Primary.args = {
+export const Default = Template.bind({});
+Default.args = {
   label: 'Button',
 };
 
-export const PrimaryHover = Template.bind({});
-PrimaryHover.args = {
-  label: 'Hover state',
-  wrapperClass: 'pseudo-hover',
+export const Accent = Template.bind({});
+Accent.args = {
+  ...Default.args,
+  variants: { variant: 'accent' },
 };

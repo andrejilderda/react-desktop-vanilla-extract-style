@@ -1,56 +1,73 @@
 import {
   createGlobalTheme,
   createTheme,
-  createThemeContract,
   createGlobalThemeContract,
-  style,
 } from '@vanilla-extract/css';
 import { classNamePrefix } from '../constants/styles';
 import { ThemeMode, ThemeName } from '../types';
 import { flatten } from 'flat';
 import { NestedObjKeys } from '../types/flat';
+import tokens from './tokens';
+import { getLightDarkColors } from '../utils/theme-helpers';
 
-const root = createGlobalTheme('#app', {
-  space: {
-    small: '4px',
-    medium: '8px',
-    large: '16px',
-  },
-  fonts: {
-    heading: 'Georgia, Times, Times New Roman, serif',
-    body: 'system-ui',
-  },
-});
+type WindowsTokenNames = NestedObjKeys<typeof tokens.windows.light>;
+type MacosTokenNames = NestedObjKeys<typeof tokens.macos.light>;
 
-const getVariables = (theme: ThemeName, mode: ThemeMode = 'light') => {
-  const componentVars = {
-    // button: button[theme](mode),
-    // ... other components
-  };
-
-  return flatten<
-    typeof componentVars,
-    Record<NestedObjKeys<typeof componentVars>, string>
-  >(componentVars, {
-    delimiter: '_',
-  });
+const globalWindowsColors: Record<string, WindowsTokenNames> = {
+  background: 'background.fill_color.solid_background.base',
 };
 
-const colors = createGlobalThemeContract(
-  getVariables('windows', 'light'),
+const globalMacosColors: Record<string, MacosTokenNames> = {
+  background: 'windows.windowBackground',
+};
+
+const windowsColors = getLightDarkColors('windows', globalWindowsColors);
+const macosColors = getLightDarkColors('macos', globalMacosColors);
+
+const windowsVars = {
+  'font-family': {
+    system:
+      '"Segoe UI Variable", "Segoe UI", "Segoe UI Emoji", "Segoe UI Symbol", system-ui, sans-serif',
+  },
+};
+
+const themeVars = createGlobalThemeContract(
+  { colors: windowsColors.light, ...windowsVars },
   (_value: string | null, path: string[]) =>
     `${classNamePrefix}-${path.join('-').replace('.', '_')}`,
 );
 
 export const windowsTheme = {
-  light: createTheme(colors, getVariables('windows', 'light'), 'windows-light'),
-  dark: createTheme(colors, getVariables('windows', 'dark'), 'windows-dark'),
+  name: 'windows',
+  light: createTheme(
+    themeVars,
+    { colors: windowsColors.light, ...windowsVars },
+    'windows-light',
+  ),
+  dark: createTheme(
+    themeVars,
+    { colors: windowsColors.dark, ...windowsVars },
+    'windows-dark',
+  ),
 };
 
+const macosVars = {
+  'font-family': {
+    system: 'system-ui, BlinkMacSystemFont, sans-serif',
+  },
+};
 export const macosTheme = {
   name: 'macos',
-  light: createTheme(colors, getVariables('macos', 'light'), 'macos-light'),
-  dark: createTheme(colors, getVariables('macos', 'dark'), 'macos-dark'),
+  light: createTheme(
+    themeVars,
+    { colors: macosColors.light, ...macosVars },
+    'macos-light',
+  ),
+  dark: createTheme(
+    themeVars,
+    { colors: macosColors.dark, ...macosVars },
+    'macos-dark',
+  ),
 };
 
 export const themes = {
@@ -58,4 +75,4 @@ export const themes = {
   macos: macosTheme,
 };
 
-export const vars = { ...root, colors };
+export const vars = { ...themeVars };

@@ -1,16 +1,19 @@
-import {
-  createGlobalThemeContract,
-  fallbackVar,
-  style,
-} from '@vanilla-extract/css';
+import { style } from '@vanilla-extract/css';
+import { recipe } from '@vanilla-extract/recipes';
 import { M } from 'ts-toolbelt';
 import { classNamePrefix, pseudo } from '../../constants/styles';
-import { assignVarsToTheme, composeVars } from '../../utils/helpers';
+import { themes, vars } from '../../themes/theme.css';
+import { assignVarsToTheme } from '../../utils/helpers';
 
 // local var
 const componentName = 'button';
-const lvar = (variable: string, fallback?: string) =>
-  `var(--${classNamePrefix}-${componentName}-${variable})`;
+const lvar = (variable: string, fallback?: string) => {
+  const varName = (name: string) =>
+    `--${classNamePrefix}-${componentName}-${name}`;
+  return fallback
+    ? `var(${varName(variable)}, var(${varName(fallback)}))`
+    : `var(${varName(variable)})`;
+};
 
 export const buttonStyle = style([
   {
@@ -41,6 +44,7 @@ export const buttonStyle = style([
 
     all: 'unset',
     cursor: 'default',
+    fontFamily: vars['font-family'].system,
     fontSize: lvar('font-size'),
     lineHeight: lvar('line-height'),
     padding: lvar('padding'),
@@ -77,11 +81,27 @@ export const buttonStyle = style([
         )}, inset 0px 0px 0px 1px ${lvar('stroke-active', 'stroke')}`,
       },
 
+      // 'stroke-disabled': 'transparent',
+      // $$elevationY: '-1px',
+      // 'elevation-stroke-active': 'transparent',
       ...assignVarsToTheme('button', 'windows', {
-        fill: 'fill_color.accent.default',
-        'fill-disabled': 'background.fill_color.smoke.default',
-        'fill-active': 'background.fill_color.smoke.default',
-        stroke: 'fill_color.accent.default',
+        // fill
+        fill: 'fill_color.control.default',
+        'fill-hover': 'fill_color.control.secondary',
+        'fill-disabled': 'fill_color.accent.disabled',
+        'fill-active': 'fill_color.control.tertiary',
+
+        // stroke
+        stroke: 'stroke_color.control_stroke.default',
+        'stroke-active': 'stroke_color.control_stroke.default',
+
+        // elevationStroke
+        'elevation-stroke': 'stroke_color.control_stroke.secondary',
+
+        // text
+        text: 'fill_color.text.primary',
+        'text-active': 'fill_color.text.secondary',
+        'text-disabled': 'fill_color.text.disabled',
       }),
 
       ...assignVarsToTheme('button', 'macos', {
@@ -90,3 +110,33 @@ export const buttonStyle = style([
     },
   },
 ]);
+
+export const buttonRecipe = recipe({
+  base: {},
+
+  variants: {
+    variant: {
+      default: {
+        vars: {},
+      },
+      accent: {
+        selectors: {
+          [`.${themes.windows.light} &, .${themes.windows.dark} &`]: {},
+          ...assignVarsToTheme('button', 'windows' as any, {
+            fill: 'fill_color.accent.default',
+            'fill-hover': 'fill_color.accent.secondary',
+            'fill-active': 'fill_color.accent.tertiary',
+            'fill-disabled': 'fill_color.accent.disabled',
+            stroke: 'stroke_color.control_stroke.on accent default',
+            'elevation-stroke':
+              'stroke_color.control_stroke.on accent secondary',
+            // text
+            text: 'fill_color.text_on_accent.primary',
+            'text-active': 'fill_color.text_on_accent.secondary',
+            'text-disabled': 'fill_color.text_on_accent.disabled',
+          }),
+        },
+      },
+    },
+  },
+});
