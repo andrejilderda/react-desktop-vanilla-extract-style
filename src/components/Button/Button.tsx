@@ -5,6 +5,7 @@ import * as styles from './button.css';
 
 export interface ButtonProps {
   label: string;
+  disabled: boolean;
   variants: RecipeVariants<typeof styles.buttonRecipe>;
   onClick?: () => void;
 }

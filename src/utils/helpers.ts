@@ -1,5 +1,4 @@
 import {
-  CSS,
   CSSProperties,
   StyleWithSelectors,
 } from '@vanilla-extract/css/dist/declarations/src/types';
@@ -81,7 +80,7 @@ export const forTheme = (forThemeProperties: SelectorMap): SelectorMap => {
  * {
  *   // ...other styles
  *   selectors: {
- *     ...assignVarsToTheme('windows', {
+ *     ...assignTokensToVars('windows', {
  *       [contract.fill]: 'background.fill_color.accent_acrylic_background.base',
  *     })
  *   }
@@ -89,29 +88,43 @@ export const forTheme = (forThemeProperties: SelectorMap): SelectorMap => {
  */
 
 // prettier-ignore
-export function assignVarsToTheme(componentName: string, theme: 'windows', vars: Partial<Record<string, NestedObjKeys<typeof tokens.windows.light>>>): Record<string, { vars: {}}>
+export function assignTokensToVars(
+  componentName: string,
+  theme: 'windows',
+  vars: Partial<
+    Record<string, NestedObjKeys<typeof tokens.windows.light> | string>
+  >,
+): Record<'light' | 'dark', { selector: string; vars: {} }>;
 // prettier-ignore
-export function assignVarsToTheme(componentName: string, theme: 'macos', vars: Partial<Record<string, NestedObjKeys<typeof tokens.macos.light>>>): Record<string, { vars: {}}>
-export function assignVarsToTheme(
+export function assignTokensToVars(
+  componentName: string,
+  theme: 'macos',
+  vars: Partial<
+    Record<string, NestedObjKeys<typeof tokens.macos.light> | string>
+  >,
+): Record<'light' | 'dark', { selector: string; vars: {} }>;
+export function assignTokensToVars(
   componentName: string,
   theme: ThemeName,
   vars: Partial<
     Record<
       string,
-      NestedObjKeys<typeof tokens.windows.light | typeof tokens.macos.light>
+      | NestedObjKeys<typeof tokens.windows.light | typeof tokens.macos.light>
+      | string
     >
   >,
-) {
+): Record<'light' | 'dark', { selector: string; vars: {} }> {
   const resolveValues = (mode: ThemeMode) => {
     return Object.entries(vars).reduce((acc, [key, value]) => {
       const themeTokens = tokens[theme][mode];
-      const resolvedValue = get(themeTokens, value as any);
+      const tokenValue = get(themeTokens, value as any);
+      const resolvedValue = tokenValue ? tokenValue : value;
 
-      if (!resolvedValue)
-        throw new Error(`Token for value '${value}' not found.`);
+      // if (!resolvedValue)
+      //   throw new Error(`Token for value '${value}' not found.`);
 
       const newKey = `--rd-${componentName}-${key.replaceAll(
-        /^var\(|\)$/g,
+        /^var\(|--|\)$/g,
         '',
       )}`;
 
@@ -120,15 +133,13 @@ export function assignVarsToTheme(
   };
 
   return {
-    [`.${themes[theme].light} &`]: {
-      vars: {
-        ...resolveValues('light'),
-      },
+    light: {
+      selector: `.${themes[theme].light} &`,
+      vars: resolveValues('light'),
     },
-    [`.${themes[theme].dark} &`]: {
-      vars: {
-        ...resolveValues('dark'),
-      },
+    dark: {
+      selector: `.${themes[theme].dark} &`,
+      vars: resolveValues('dark'),
     },
   };
 }

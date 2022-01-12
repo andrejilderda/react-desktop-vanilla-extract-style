@@ -1,15 +1,22 @@
 import { style } from '@vanilla-extract/css';
 import { recipe } from '@vanilla-extract/recipes';
-import { M } from 'ts-toolbelt';
+import { componentName } from '.';
+import selectors from '../../constants/selectors';
 import { classNamePrefix, pseudo } from '../../constants/styles';
-import { themes, vars } from '../../themes/theme.css';
-import { assignVarsToTheme } from '../../utils/helpers';
+import { vars } from '../../themes/theme.css';
+import { assignTokensToVars } from '../../utils/helpers';
+import windowsVars from './themes/button.windows.css';
 
-// local var
-const componentName = 'button';
-const lvar = (variable: string, fallback?: string) => {
+// construct a local variable name
+const l = ([localVar]: TemplateStringsArray) => {
   const varName = (name: string) =>
     `--${classNamePrefix}-${componentName}-${name}`;
+
+  const splitVariables = (localVar as string)
+    .replaceAll(/--/g, '')
+    .split(/, /i);
+  const [variable, fallback] = splitVariables;
+
   return fallback
     ? `var(${varName(variable)}, var(${varName(fallback)}))`
     : `var(${varName(variable)})`;
@@ -45,71 +52,65 @@ export const buttonStyle = style([
     all: 'unset',
     cursor: 'default',
     fontFamily: vars['font-family'].system,
-    fontSize: lvar('font-size'),
-    lineHeight: lvar('line-height'),
-    padding: lvar('padding'),
+    fontSize: l`--font-size`,
+    lineHeight: l`--line-height`,
+    padding: l`--padding`,
     textAlign: 'center',
     userSelect: 'none',
-    borderColor: lvar('border'),
-    backgroundColor: lvar('fill'),
-    color: lvar('text'),
+    borderColor: l`--border`,
+    backgroundColor: l`--fill`,
+    color: l`--text`,
 
     selectors: {
       '&[disabled]': {
-        backgroundColor: lvar('fill-disabled', 'fill'),
-        borderColor: lvar('border-disabled', 'border'),
-        color: lvar('text-disabled', 'text'),
+        backgroundColor: l`--fill-disabled, --fill`,
+        borderColor: l`--border-disabled, --border`,
+        color: l`--text-disabled, --text`,
       },
 
       '&:not([disabled])': {
-        boxShadow: `inset 0px ${lvar('elevation-y')} 0px 0px ${lvar(
-          'elevation-stroke',
-        )}, inset 0px 0px 0px 1px ${lvar('stroke')}`,
+        boxShadow: `inset 0px ${l`--elevation-y`} 0px 0px ${l`--elevation-stroke`}, inset 0px 0px 0px 1px ${l`--stroke`}`,
       },
 
       [`${pseudo.hover}:not([disabled])`]: {
-        backgroundColor: lvar('fill-hover', 'fill'),
-        color: lvar('text-hover', 'text'),
+        backgroundColor: l`--fill-hover, --fill`,
+        color: l`--text-hover, --text`,
       },
 
       [`${pseudo.active}:not([disabled])`]: {
-        backgroundColor: lvar('fill-active', 'fill'),
-        color: lvar('text-active', 'text'),
-        boxShadow: `inset 0px elevationY 0px 0px ${lvar(
-          'elevation-stroke-active',
-          'elevation-stroke',
-        )}, inset 0px 0px 0px 1px ${lvar('stroke-active', 'stroke')}`,
+        backgroundColor: l`--fill-active, --fill`,
+        color: l`--text-active, --text`,
+        boxShadow: `inset 0px ${l`--elevation-y`} 0px 0px ${l`--elevation-stroke-active, --elevation-stroke`}, inset 0px 0px 0px 1px ${l`--stroke-active, --stroke`}`,
       },
 
-      // 'stroke-disabled': 'transparent',
-      // $$elevationY: '-1px',
-      // 'elevation-stroke-active': 'transparent',
-      ...assignVarsToTheme('button', 'windows', {
-        // fill
-        fill: 'fill_color.control.default',
-        'fill-hover': 'fill_color.control.secondary',
-        'fill-disabled': 'fill_color.accent.disabled',
-        'fill-active': 'fill_color.control.tertiary',
+      [`${selectors.windows}`]: {
+        borderRadius: '4px',
+      },
 
-        // stroke
-        stroke: 'stroke_color.control_stroke.default',
-        'stroke-active': 'stroke_color.control_stroke.default',
-
-        // elevationStroke
-        'elevation-stroke': 'stroke_color.control_stroke.secondary',
-
-        // text
-        text: 'fill_color.text.primary',
-        'text-active': 'fill_color.text.secondary',
-        'text-disabled': 'fill_color.text.disabled',
-      }),
-
-      ...assignVarsToTheme('button', 'macos', {
-        fill: 'base.blue',
-      }),
+      [windowsVars.light.selector]: { vars: windowsVars.light.vars },
+      [windowsVars.dark.selector]: {
+        vars: {
+          ...windowsVars.dark.vars,
+          '--rd-button-elevation-y': '1px',
+        },
+      },
     },
   },
 ]);
+
+// Variant: accent
+const accentVars = assignTokensToVars('button', 'windows' as any, {
+  fill: 'fill_color.accent.default',
+  'fill-hover': 'fill_color.accent.secondary',
+  'fill-active': 'fill_color.accent.tertiary',
+  'fill-disabled': 'fill_color.accent.disabled',
+  stroke: 'stroke_color.control_stroke.on accent default',
+  'elevation-stroke': 'stroke_color.control_stroke.on accent secondary',
+  // text
+  text: 'fill_color.text_on_accent.primary',
+  'text-active': 'fill_color.text_on_accent.secondary',
+  'text-disabled': 'fill_color.text_on_accent.disabled',
+});
 
 export const buttonRecipe = recipe({
   base: {},
@@ -121,20 +122,8 @@ export const buttonRecipe = recipe({
       },
       accent: {
         selectors: {
-          [`.${themes.windows.light} &, .${themes.windows.dark} &`]: {},
-          ...assignVarsToTheme('button', 'windows' as any, {
-            fill: 'fill_color.accent.default',
-            'fill-hover': 'fill_color.accent.secondary',
-            'fill-active': 'fill_color.accent.tertiary',
-            'fill-disabled': 'fill_color.accent.disabled',
-            stroke: 'stroke_color.control_stroke.on accent default',
-            'elevation-stroke':
-              'stroke_color.control_stroke.on accent secondary',
-            // text
-            text: 'fill_color.text_on_accent.primary',
-            'text-active': 'fill_color.text_on_accent.secondary',
-            'text-disabled': 'fill_color.text_on_accent.disabled',
-          }),
+          [accentVars.dark.selector]: { vars: accentVars.dark.vars },
+          [accentVars.light.selector]: { vars: accentVars.light.vars },
         },
       },
     },

@@ -5,8 +5,8 @@ import { windowsTheme, vars, macosTheme } from './theme.css';
 const themeProperties = defineProperties({
   conditions: {
     base: {},
-    windows: { selector: `.${windowsTheme.light} &, .${windowsTheme.dark} &,` },
-    macos: { selector: `.${macosTheme.light} &, .${macosTheme.dark} &,` },
+    windows: { selector: `.${windowsTheme.light} &, .${windowsTheme.dark} &` },
+    macos: { selector: `.${macosTheme.light} &, .${macosTheme.dark} &` },
   },
   defaultCondition: 'base',
   properties: {
