@@ -5,7 +5,8 @@ import {
   classNamePrefix,
   pseudoWrapperClassNames,
 } from '../src/constants/styles';
-import { macosTheme, windowsTheme, vars } from '../src/themes/theme.css';
+import { themes } from '../src/themes/themes.css';
+import { vars } from '../src/themes/theme.css';
 import { storybookPreview } from './preview.css';
 
 export const parameters = {
@@ -78,11 +79,6 @@ export const globalTypes = {
       showName: true,
     },
   },
-};
-
-const themes = {
-  windows: windowsTheme,
-  macos: macosTheme,
 };
 
 const StoryWrapper = ({

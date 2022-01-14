@@ -1,14 +1,10 @@
-import {
-  CSS,
-  CSSProperties,
-  StyleWithSelectors,
-} from '@vanilla-extract/css/dist/declarations/src/types';
+import { StyleWithSelectors } from '@vanilla-extract/css/dist/declarations/src/types';
 import { Nullable } from 'ts-toolbelt/out/Object/Nullable';
-import { classNamePrefix } from '../constants/styles';
-import tokens from '../themes/tokens';
-import { themes } from '../themes/theme.css';
-import { ThemeMode, ThemeName } from '../types';
-import { NestedObjKeys } from '../types/flat';
+import { classNamePrefix } from 'src/constants/styles';
+import tokens from 'src/themes/tokens';
+import { themes } from 'src/themes/themes.css';
+import { ThemeMode, ThemeName } from 'src/types';
+import { NestedObjKeys } from 'src/types/flat';
 import { get } from 'lodash';
 
 // iterate over an object and make all object properties null
@@ -57,13 +53,14 @@ export function getTokens(theme: ThemeName, mode: ThemeMode) {
  */
 
 type SelectorMap = StyleWithSelectors['selectors'];
+
 export const forTheme = (forThemeProperties: SelectorMap): SelectorMap => {
   const selectors = Object.entries(forThemeProperties || {}).reduce(
     (acc, [key, value]) => {
       const themeClassNames =
         key === 'windows'
-          ? `.${windowsTheme.light} &, .${windowsTheme.dark} &`
-          : `.${macosTheme.light} &, .${macosTheme.dark} &`;
+          ? `.${themes.windows.light} &, .${themes.windows.dark} &`
+          : `.${themes.macos.light} &, .${themes.macos.dark} &`;
 
       return { ...acc, [`${themeClassNames}`]: value };
     },
@@ -81,7 +78,7 @@ export const forTheme = (forThemeProperties: SelectorMap): SelectorMap => {
  * {
  *   // ...other styles
  *   selectors: {
- *     ...assignVarsToTheme('windows', {
+ *     ...assignTokensToVars('windows', {
  *       [contract.fill]: 'background.fill_color.accent_acrylic_background.base',
  *     })
  *   }
@@ -89,40 +86,58 @@ export const forTheme = (forThemeProperties: SelectorMap): SelectorMap => {
  */
 
 // prettier-ignore
-export function assignVarsToTheme<T extends object>(theme: 'windows', vars: Partial<Record<keyof T, NestedObjKeys<typeof tokens.windows.light>>>): Record<string, { vars: {}}>
+export function assignTokensToVars(
+  componentName: string,
+  theme: 'windows',
+  vars: Partial<
+    Record<string, NestedObjKeys<typeof tokens.windows.light> | string>
+  >,
+): Record<'light' | 'dark', { selector: string; vars: {} }>;
 // prettier-ignore
-export function assignVarsToTheme<T extends object>(theme: 'macos', vars: Partial<Record<keyof T, NestedObjKeys<typeof tokens.macos.light>>>): Record<string, { vars: {}}>
-export function assignVarsToTheme<T extends object>(
+export function assignTokensToVars(
+  componentName: string,
+  theme: 'macos',
+  vars: Partial<
+    Record<string, NestedObjKeys<typeof tokens.macos.light> | string>
+  >,
+): Record<'light' | 'dark', { selector: string; vars: {} }>;
+export function assignTokensToVars(
+  componentName: string,
   theme: ThemeName,
   vars: Partial<
     Record<
-      keyof T,
-      NestedObjKeys<typeof tokens.windows.light | typeof tokens.macos.light>
+      string,
+      | NestedObjKeys<typeof tokens.windows.light | typeof tokens.macos.light>
+      | string
     >
   >,
-) {
+): Record<'light' | 'dark', { selector: string; vars: {} }> {
   const resolveValues = (mode: ThemeMode) => {
     return Object.entries(vars).reduce((acc, [key, value]) => {
       const themeTokens = tokens[theme][mode];
-      const resolvedValue = get(themeTokens, value as any);
+      const tokenValue = get(themeTokens, value as any);
+      const resolvedValue = tokenValue ? tokenValue : value;
 
-      if (!resolvedValue)
-        throw new Error(`Token for value '${value}' not found.`);
+      // if (!resolvedValue)
+      //   throw new Error(`Token for value '${value}' not found.`);
 
-      return { ...acc, [key.replaceAll(/^var\(|\)$/g, '')]: resolvedValue };
+      const newKey = `--rd-${componentName}-${key.replaceAll(
+        /^var\(|--|\)$/g,
+        '',
+      )}`;
+
+      return { ...acc, [newKey]: resolvedValue };
     }, {});
   };
 
   return {
-    [`.${themes[theme].light} &`]: {
-      vars: {
-        ...resolveValues('light'),
-      },
+    light: {
+      selector: `.${themes[theme].light} &`,
+      vars: resolveValues('light'),
     },
-    [`.${themes[theme].dark} &`]: {
-      vars: {
-        ...resolveValues('dark'),
-      },
+    dark: {
+      selector: `.${themes[theme].dark} &`,
+      vars: resolveValues('dark'),
     },
   };
 }

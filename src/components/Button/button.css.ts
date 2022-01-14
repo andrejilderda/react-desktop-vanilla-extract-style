@@ -1,118 +1,121 @@
-import {
-  createGlobalThemeContract,
-  fallbackVar,
-  style,
-} from '@vanilla-extract/css';
-import { classNamePrefix, pseudo } from '../../constants/styles';
-import { assignVarsToTheme, composeVars } from '../../utils/helpers';
+import { style } from '@vanilla-extract/css';
+import { recipe } from '@vanilla-extract/recipes';
+import { componentName } from '.';
+import selectors from 'src/constants/selectors';
+import { classNamePrefix, pseudo } from 'src/constants/styles';
+import { vars } from 'src/themes/theme.css';
+import { assignTokensToVars } from 'src/utils/helpers';
+import windowsVars from './themes/button.windows.css';
+import createUseVarFn from 'src/utils/createUseVarFn';
 
-const colorVars = {
-  border: 'button-border',
-  borderDisabled: 'button-border-disabled',
-
-  elevationStroke: 'button-elevation-stroke',
-  elevationStrokeActive: 'button-elevation-stroke-active',
-
-  fill: 'button-fill',
-  fillActive: 'button-fill-active',
-  fillHover: 'button-fill-hover',
-  fillDisabled: 'button-fill-disabled',
-
-  stroke: 'button-stroke',
-  strokeActive: 'button-stroke-active',
-
-  text: 'button-text',
-  textActive: 'button-text-active',
-  textHover: 'button-text-hover',
-  textDisabled: 'button-text-disabled',
-} as const;
-
-const constructClass = (_value: string | null, path: string[]) =>
-  `${classNamePrefix}-button-${path.join('-').replace('.', '_')}`;
-
-// contract for colorVars
-const c = createGlobalThemeContract(colorVars, constructClass);
-const local = createGlobalThemeContract(
-  {
-    fontSize: 'button-font-size',
-    elevationY: 'button-elevation-y',
-    elevationStroke: 'button-elevation-stroke',
-    stroke: 'button-stroke',
-  },
-  constructClass,
-);
+const useVar = createUseVarFn(componentName);
 
 export const buttonStyle = style([
   {
+    vars: {
+      ...Object.fromEntries(
+        [
+          'border',
+          'border-disabled',
+          'elevation-stroke',
+          'elevation-stroke-active',
+          'fill',
+          'fill-active',
+          'fill-hover',
+          'fill-disabled',
+          'stroke',
+          'stroke-active',
+          'text',
+          'text-active',
+          'text-hover',
+          'text-disabled',
+          'font-size',
+        ].map((key) => [
+          `--${classNamePrefix}-${componentName}-${key}`,
+          'initial',
+        ]),
+      ),
+    },
+
     all: 'unset',
     cursor: 'default',
-    fontSize: local.fontSize,
-    lineHeight: '$2',
-    padding: '6px $5',
+    fontFamily: vars['font-family'].system,
+
+    lineHeight: useVar`--line-height`,
+    padding: useVar`--padding`,
     textAlign: 'center',
     userSelect: 'none',
-    borderColor: c.border,
-    backgroundColor: c.fill,
-    color: c.text,
-    content: c.borderDisabled,
+    borderColor: useVar`--border`,
+    backgroundColor: useVar`--fill`,
+    color: useVar`--text`,
 
     selectors: {
       '&[disabled]': {
-        backgroundColor: fallbackVar(c.fillDisabled, c.fill),
-        borderColor: fallbackVar(c.borderDisabled, c.border),
-        color: fallbackVar(c.textDisabled, c.text),
+        backgroundColor: useVar`--fill-disabled, --fill`,
+        borderColor: useVar`--border-disabled, --border`,
+        color: useVar`--text-disabled, --text`,
       },
 
       '&:not([disabled])': {
-        boxShadow:
-          'inset 0px $$elevationY 0px 0px $$elevationStroke, inset 0px 0px 0px 1px $$stroke',
+        boxShadow: `inset 0px ${useVar`--elevation-y`} 0px 0px ${useVar`--elevation-stroke`}, inset 0px 0px 0px 1px ${useVar`--stroke`}`,
       },
 
       // hover
       [`${pseudo.hover}:not([disabled])`]: {
-        backgroundColor: fallbackVar(c.fillHover, c.fill),
-        color: fallbackVar(c.textHover, c.text),
+        backgroundColor: useVar`--fill-hover, --fill`,
+        color: useVar`--text-hover, --text`,
       },
 
       // active
       [`${pseudo.active}:not([disabled])`]: {
-        backgroundColor: fallbackVar(c.fillActive, c.fill),
-        color: fallbackVar(c.textActive, c.text),
-        boxShadow: `inset 0px elevationY 0px 0px ${fallbackVar(
-          c.elevationStrokeActive,
-          c.elevationStroke,
-        )}, inset 0px 0px 0px 1px ${fallbackVar(c.strokeActive, c.stroke)}`,
+        backgroundColor: useVar`--fill-active, --fill`,
+        color: useVar`--text-active, --text`,
+        boxShadow: `inset 0px ${useVar`--elevation-y`} 0px 0px ${useVar`--elevation-stroke-active, --elevation-stroke`}, inset 0px 0px 0px 1px ${useVar`--stroke-active, --stroke`}`,
       },
 
-      // windows
-      // [c.strokeDisabled]: 'transparent',
-      // borderRadius: '4px',
-      // [c.elevationStrokeActive]: 'transparent',
+      [`${selectors.windows}`]: {
+        borderRadius: '4px',
+      },
 
-      // windows color overrides
-      ...assignVarsToTheme<typeof c>('windows', {
-        [c.fill]: 'fill_color.control.default',
-        [c.fillHover]: 'fill_color.control.secondary',
-        [c.fillDisabled]: 'fill_color.accent.disabled',
-        [c.fillActive]: 'fill_color.control.tertiary',
-
-        // stroke
-        [c.stroke]: 'stroke_color.control_stroke.default',
-        [c.strokeActive]: 'stroke_color.control_stroke.default',
-
-        // elevationStroke
-        [c.elevationStroke]: 'stroke_color.control_stroke.secondary',
-
-        // text
-        [c.text]: 'fill_color.text.primary',
-        [c.textActive]: 'fill_color.text.secondary',
-        [c.textDisabled]: 'fill_color.text.disabled',
-      }),
-
-      // macos color overrides
-      ...assignVarsToTheme<typeof colorVars>('macos', {
-        [c.fill]: 'base.blue',
-      }),
+      [windowsVars.light.selector]: { vars: windowsVars.light.vars },
+      [windowsVars.dark.selector]: {
+        vars: {
+          ...windowsVars.dark.vars,
+          '--rd-button-elevation-y': '1px',
+        },
+      },
     },
   },
 ]);
+
+// Variant: accent
+const accentVars = assignTokensToVars('button', 'windows', {
+  fill: 'fill_color.accent.default',
+  'fill-hover': 'fill_color.accent.secondary',
+  'fill-active': 'fill_color.accent.tertiary',
+  'fill-disabled': 'fill_color.accent.disabled',
+  stroke: 'stroke_color.control_stroke.on accent default',
+  'elevation-stroke': 'stroke_color.control_stroke.on accent secondary',
+  // text
+  text: 'fill_color.text_on_accent.primary',
+  'text-active': 'fill_color.text_on_accent.secondary',
+  'text-disabled': 'fill_color.text_on_accent.disabled',
+});
+
+export const buttonRecipe = recipe({
+  base: {},
+
+  variants: {
+    variant: {
+      default: {
+        vars: {},
+      },
+      accent: {
+        selectors: {
+          [accentVars.dark.selector]: { vars: accentVars.dark.vars },
+          [accentVars.light.selector]: { vars: accentVars.light.vars },
+        },
+      },
+    },
+  },
+});
