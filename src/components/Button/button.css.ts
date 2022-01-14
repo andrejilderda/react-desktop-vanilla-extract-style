@@ -6,21 +6,9 @@ import { classNamePrefix, pseudo } from 'src/constants/styles';
 import { vars } from 'src/themes/theme.css';
 import { assignTokensToVars } from 'src/utils/helpers';
 import windowsVars from './themes/button.windows.css';
+import createUseVarFn from 'src/utils/createUseVarFn';
 
-// construct a local variable name
-const l = ([localVar]: TemplateStringsArray) => {
-  const varName = (name: string) =>
-    `--${classNamePrefix}-${componentName}-${name}`;
-
-  const splitVariables = (localVar as string)
-    .replaceAll(/--/g, '')
-    .split(/, /i);
-  const [variable, fallback] = splitVariables;
-
-  return fallback
-    ? `var(${varName(variable)}, var(${varName(fallback)}))`
-    : `var(${varName(variable)})`;
-};
+const useVar = createUseVarFn(componentName);
 
 export const buttonStyle = style([
   {
@@ -52,37 +40,37 @@ export const buttonStyle = style([
     all: 'unset',
     cursor: 'default',
     fontFamily: vars['font-family'].system,
-    fontSize: l`--font-size`,
-    lineHeight: l`--line-height`,
-    padding: l`--padding`,
+
+    lineHeight: useVar`--line-height`,
+    padding: useVar`--padding`,
     textAlign: 'center',
     userSelect: 'none',
-    borderColor: l`--border`,
-    backgroundColor: l`--fill`,
-    color: l`--text`,
+    borderColor: useVar`--border`,
+    backgroundColor: useVar`--fill`,
+    color: useVar`--text`,
 
     selectors: {
       '&[disabled]': {
-        backgroundColor: l`--fill-disabled, --fill`,
-        borderColor: l`--border-disabled, --border`,
-        color: l`--text-disabled, --text`,
+        backgroundColor: useVar`--fill-disabled, --fill`,
+        borderColor: useVar`--border-disabled, --border`,
+        color: useVar`--text-disabled, --text`,
       },
 
       '&:not([disabled])': {
-        boxShadow: `inset 0px ${l`--elevation-y`} 0px 0px ${l`--elevation-stroke`}, inset 0px 0px 0px 1px ${l`--stroke`}`,
+        boxShadow: `inset 0px ${useVar`--elevation-y`} 0px 0px ${useVar`--elevation-stroke`}, inset 0px 0px 0px 1px ${useVar`--stroke`}`,
       },
 
       // hover
       [`${pseudo.hover}:not([disabled])`]: {
-        backgroundColor: l`--fill-hover, --fill`,
-        color: l`--text-hover, --text`,
+        backgroundColor: useVar`--fill-hover, --fill`,
+        color: useVar`--text-hover, --text`,
       },
 
       // active
       [`${pseudo.active}:not([disabled])`]: {
-        backgroundColor: l`--fill-active, --fill`,
-        color: l`--text-active, --text`,
-        boxShadow: `inset 0px ${l`--elevation-y`} 0px 0px ${l`--elevation-stroke-active, --elevation-stroke`}, inset 0px 0px 0px 1px ${l`--stroke-active, --stroke`}`,
+        backgroundColor: useVar`--fill-active, --fill`,
+        color: useVar`--text-active, --text`,
+        boxShadow: `inset 0px ${useVar`--elevation-y`} 0px 0px ${useVar`--elevation-stroke-active, --elevation-stroke`}, inset 0px 0px 0px 1px ${useVar`--stroke-active, --stroke`}`,
       },
 
       [`${selectors.windows}`]: {
@@ -101,7 +89,7 @@ export const buttonStyle = style([
 ]);
 
 // Variant: accent
-const accentVars = assignTokensToVars('button', 'windows' as any, {
+const accentVars = assignTokensToVars('button', 'windows', {
   fill: 'fill_color.accent.default',
   'fill-hover': 'fill_color.accent.secondary',
   'fill-active': 'fill_color.accent.tertiary',
