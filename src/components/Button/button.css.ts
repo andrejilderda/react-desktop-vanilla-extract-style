@@ -72,11 +72,13 @@ export const buttonStyle = style([
         boxShadow: `inset 0px ${l`--elevation-y`} 0px 0px ${l`--elevation-stroke`}, inset 0px 0px 0px 1px ${l`--stroke`}`,
       },
 
+      // hover
       [`${pseudo.hover}:not([disabled])`]: {
         backgroundColor: l`--fill-hover, --fill`,
         color: l`--text-hover, --text`,
       },
 
+      // active
       [`${pseudo.active}:not([disabled])`]: {
         backgroundColor: l`--fill-active, --fill`,
         color: l`--text-active, --text`,
