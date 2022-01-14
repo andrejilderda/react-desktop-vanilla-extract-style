@@ -1,7 +1,4 @@
-import {
-  CSSProperties,
-  StyleWithSelectors,
-} from '@vanilla-extract/css/dist/declarations/src/types';
+import { StyleWithSelectors } from '@vanilla-extract/css/dist/declarations/src/types';
 import { Nullable } from 'ts-toolbelt/out/Object/Nullable';
 import { classNamePrefix } from 'src/constants/styles';
 import tokens from 'src/themes/tokens';
@@ -56,6 +53,7 @@ export function getTokens(theme: ThemeName, mode: ThemeMode) {
  */
 
 type SelectorMap = StyleWithSelectors['selectors'];
+
 export const forTheme = (forThemeProperties: SelectorMap): SelectorMap => {
   const selectors = Object.entries(forThemeProperties || {}).reduce(
     (acc, [key, value]) => {
