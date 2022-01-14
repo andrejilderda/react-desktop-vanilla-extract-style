@@ -3,11 +3,11 @@ import {
   StyleWithSelectors,
 } from '@vanilla-extract/css/dist/declarations/src/types';
 import { Nullable } from 'ts-toolbelt/out/Object/Nullable';
-import { classNamePrefix } from '../constants/styles';
-import tokens from '../themes/tokens';
-import { themes } from '../themes/themes.css';
-import { ThemeMode, ThemeName } from '../types';
-import { NestedObjKeys } from '../types/flat';
+import { classNamePrefix } from 'src/constants/styles';
+import tokens from 'src/themes/tokens';
+import { themes } from 'src/themes/themes.css';
+import { ThemeMode, ThemeName } from 'src/types';
+import { NestedObjKeys } from 'src/types/flat';
 import { get } from 'lodash';
 
 // iterate over an object and make all object properties null

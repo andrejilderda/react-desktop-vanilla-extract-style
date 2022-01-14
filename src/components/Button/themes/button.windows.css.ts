@@ -1,5 +1,5 @@
 import { componentName } from './../index';
-import { assignTokensToVars } from './../../../utils/helpers';
+import { assignTokensToVars } from 'src/utils/helpers';
 
 const buttonVars = assignTokensToVars(componentName, 'windows', {
   '--stroke-disabled': 'transparent',

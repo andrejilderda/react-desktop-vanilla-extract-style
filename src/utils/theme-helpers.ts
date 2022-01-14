@@ -1,6 +1,6 @@
-import tokens from '../themes/tokens';
-import { ThemeName } from '../types';
-import { NestedObjKeys } from '../types/flat';
+import tokens from 'src/themes/tokens';
+import { ThemeName } from 'src/types';
+import { NestedObjKeys } from 'src/types/flat';
 import { get } from 'lodash';
 
 /**

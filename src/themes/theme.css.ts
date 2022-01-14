@@ -1,5 +1,5 @@
 import { createGlobalThemeContract } from '@vanilla-extract/css';
-import { classNamePrefix } from '../constants/styles';
+import { classNamePrefix } from 'src/constants/styles';
 import { variables, colors } from './windows/variables.css';
 
 export const themeContract = createGlobalThemeContract(

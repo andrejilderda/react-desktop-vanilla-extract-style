@@ -1,10 +1,10 @@
 import { style } from '@vanilla-extract/css';
 import { recipe } from '@vanilla-extract/recipes';
 import { componentName } from '.';
-import selectors from '../../constants/selectors';
-import { classNamePrefix, pseudo } from '../../constants/styles';
-import { vars } from '../../themes/theme.css';
-import { assignTokensToVars } from '../../utils/helpers';
+import selectors from 'src/constants/selectors';
+import { classNamePrefix, pseudo } from 'src/constants/styles';
+import { vars } from 'src/themes/theme.css';
+import { assignTokensToVars } from 'src/utils/helpers';
 import windowsVars from './themes/button.windows.css';
 
 // construct a local variable name

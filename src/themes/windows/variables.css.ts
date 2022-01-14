@@ -1,8 +1,8 @@
-import { NestedObjKeys } from '../../types/flat';
-import { getLightDarkColors } from '../../utils/theme-helpers';
-import tokens from '../tokens';
+import { NestedObjKeys } from 'src/types/flat';
+import { getLightDarkColors } from 'src/utils/theme-helpers';
+import tokens from './tokens';
 
-type TokenNames = NestedObjKeys<typeof tokens.windows.light>;
+type TokenNames = NestedObjKeys<typeof tokens.light>;
 
 export const variables = {
   'font-family': {

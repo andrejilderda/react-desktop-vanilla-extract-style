@@ -1,5 +1,5 @@
 import { createTheme } from '@vanilla-extract/css';
-import { themeContract } from '../theme.css';
+import { themeContract } from 'src/themes/theme.css';
 import variables, { colors } from './variables.css';
 
 export const theme = {
