@@ -1,12 +1,15 @@
 import { defineProperties, createSprinkles } from '@vanilla-extract/sprinkles';
 import { pseudo } from '../constants/styles';
-import { windowsTheme, vars, macosTheme } from './theme.css';
+import { vars } from './theme.css';
+import { themes } from './themes.css';
 
 const themeProperties = defineProperties({
   conditions: {
     base: {},
-    windows: { selector: `.${windowsTheme.light} &, .${windowsTheme.dark} &` },
-    macos: { selector: `.${macosTheme.light} &, .${macosTheme.dark} &` },
+    windows: {
+      selector: `.${themes.windows.light} &, .${themes.windows.dark} &`,
+    },
+    macos: { selector: `.${themes.macos.light} &, .${themes.macos.dark} &` },
   },
   defaultCondition: 'base',
   properties: {

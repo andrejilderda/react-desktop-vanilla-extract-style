@@ -5,7 +5,7 @@ import {
 import { Nullable } from 'ts-toolbelt/out/Object/Nullable';
 import { classNamePrefix } from '../constants/styles';
 import tokens from '../themes/tokens';
-import { themes } from '../themes/theme.css';
+import { themes } from '../themes/themes.css';
 import { ThemeMode, ThemeName } from '../types';
 import { NestedObjKeys } from '../types/flat';
 import { get } from 'lodash';
@@ -61,8 +61,8 @@ export const forTheme = (forThemeProperties: SelectorMap): SelectorMap => {
     (acc, [key, value]) => {
       const themeClassNames =
         key === 'windows'
-          ? `.${windowsTheme.light} &, .${windowsTheme.dark} &`
-          : `.${macosTheme.light} &, .${macosTheme.dark} &`;
+          ? `.${themes.windows.light} &, .${themes.windows.dark} &`
+          : `.${themes.macos.light} &, .${themes.macos.dark} &`;
 
       return { ...acc, [`${themeClassNames}`]: value };
     },

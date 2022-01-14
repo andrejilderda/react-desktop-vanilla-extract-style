@@ -1,4 +1,4 @@
-import { themes } from './../themes/theme.css';
+import { themes } from './../themes/themes.css';
 
 export default {
   windows: {
