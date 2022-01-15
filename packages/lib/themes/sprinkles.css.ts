@@ -1,5 +1,5 @@
 import { defineProperties, createSprinkles } from '@vanilla-extract/sprinkles';
-import { pseudo } from 'src/constants/styles';
+import { pseudo } from 'lib/constants/styles';
 import { vars } from './theme.css';
 import { themes } from './themes.css';
 

@@ -1,18 +1,18 @@
 import { createTheme } from '@vanilla-extract/css';
-import { themeContract } from 'src/themes/theme.css';
+import { themeContract } from 'lib/themes/theme.css';
 import variables, { colors } from './variables.css';
 
-export const theme = {
-  name: 'macos',
+const theme = {
+  name: 'windows',
   light: createTheme(
     themeContract,
     { colors: colors.light, ...variables },
-    'macos-light',
+    'windows-light',
   ),
   dark: createTheme(
     themeContract,
     { colors: colors.dark, ...variables },
-    'macos-dark',
+    'windows-dark',
   ),
 };
 

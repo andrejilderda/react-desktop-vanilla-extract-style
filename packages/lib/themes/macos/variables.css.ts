@@ -1,5 +1,5 @@
-import { NestedObjKeys } from 'src/types/flat';
-import { getLightDarkColors } from 'src/utils/theme-helpers';
+import { NestedObjKeys } from 'lib/types/flat';
+import { getLightDarkColors } from 'lib/utils/theme-helpers';
 import tokens from './tokens';
 
 type TokenNames = NestedObjKeys<typeof tokens.light>;

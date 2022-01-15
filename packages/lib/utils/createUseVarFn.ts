@@ -1,4 +1,4 @@
-import { classNamePrefix } from 'src/constants/styles';
+import { classNamePrefix } from 'lib/constants/styles';
 
 /**
  * Higher order function that returns a tagged template literal-function for
