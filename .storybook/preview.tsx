@@ -57,7 +57,7 @@ export const globalTypes = {
   },
   mode: {
     name: 'Mode',
-    defaultValue: 'light',
+    defaultValue: 'side-by-side',
     toolbar: {
       icon: 'contrast',
       items: [
@@ -68,6 +68,16 @@ export const globalTypes = {
         { value: 'stacked', icon: 'bottombar', title: 'stacked' },
       ],
       showName: true,
+      shortcuts: {
+        next: {
+          label: 'Go to next mode',
+          keys: ['O'],
+        },
+        previous: {
+          label: 'Go to previous mode',
+          keys: ['I'],
+        },
+      },
     },
   },
   pseudo: {
