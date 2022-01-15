@@ -1,10 +1,11 @@
 // import './App.css';
-import { Button } from './../../button/src/Button';
+import Button from './../../components/button/src/Button';
 
 function App() {
   return (
     <div className="App">
-      <Button>Button</Button>
+      Button:
+      <Button label="foo" disabled={false} variants={undefined} />
     </div>
   );
 }

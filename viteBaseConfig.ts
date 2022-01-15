@@ -1,13 +1,15 @@
-import path from "path"
+import path from 'path';
+import { vanillaExtractPlugin } from '@vanilla-extract/vite-plugin';
 
-import { UserConfigExport } from "vite"
-import dts from "vite-dts"
+import { UserConfigExport } from 'vite';
+import dts from 'vite-dts';
 
 export function getBaseViteConfig(
   dirname: string,
-  override?: UserConfigExport
+  override?: UserConfigExport,
 ): UserConfigExport {
-  const isExternal = (id: string) => !id.startsWith(".") && !path.isAbsolute(id)
+  const isExternal = (id: string) =>
+    !id.startsWith('.') && !path.isAbsolute(id);
 
   return {
     esbuild: {
@@ -15,14 +17,14 @@ export function getBaseViteConfig(
     },
     build: {
       lib: {
-        entry: path.resolve(dirname, "src/index.ts"),
-        formats: ["es"],
+        entry: path.resolve(dirname, 'src/index.ts'),
+        formats: ['es'],
       },
       rollupOptions: {
         external: isExternal,
       },
     },
-    plugins: [dts()],
+    plugins: [dts(), vanillaExtractPlugin()],
     ...override,
-  }
+  };
 }

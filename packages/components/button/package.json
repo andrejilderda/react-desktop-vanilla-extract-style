@@ -5,6 +5,7 @@
   "description": "Button description",
   "main": "dist/button.es.js",
   "module": "dist/button.es.js",
+  "license": "MIT",
   "scripts": {
     "build": "vite build",
     "build:watch": "vite build --watch",
