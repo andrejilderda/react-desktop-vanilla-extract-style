@@ -16,6 +16,7 @@ module.exports = {
     config.resolve.modules = [
       ...(config.resolve.modules || []),
       path.resolve('./'),
+      path.resolve('./packages'),
     ];
     config.plugins.push(new VanillaExtractPlugin());
 

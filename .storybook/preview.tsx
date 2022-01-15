@@ -4,9 +4,9 @@ import React, { useState, Fragment } from 'react';
 import {
   classNamePrefix,
   pseudoWrapperClassNames,
-} from '../src/constants/styles';
-import { themes } from '../src/themes/themes.css';
-import { vars } from '../src/themes/theme.css';
+} from '../packages/lib/constants/styles';
+import { themes } from '../packages/lib/themes/themes.css';
+import { vars } from '../packages/lib/themes/theme.css';
 import { storybookPreview } from './preview.css';
 
 export const parameters = {
