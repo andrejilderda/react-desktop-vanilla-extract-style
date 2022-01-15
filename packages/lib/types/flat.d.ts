@@ -72,5 +72,3 @@ type NestedObjectType = {
     c: string;
   };
 };
-
-const test: NestedObjKeys<NestedObjectType> = 'a';
